@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const token = window.localStorage.getItem("user");
-const baseUrl: string = "http://localhost:8080/api";
+const baseUrl: string = process.env.BASE_URL || "http://localhost:8080/api";
 const authCall = (endpoint: string, data: any) => {
   return new Promise((resolve, reject) => {
     axios

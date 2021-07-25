@@ -1,25 +1,32 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import { AuthContext, AuthDispatch } from "./Context";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ChakraProvider } from "@chakra-ui/react";
+import AuthLayout from "./Layouts/AuthLayout";
+import DashboardLayout from "./Layouts/DashboardLayout";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 function App() {
+  const [authenticated, setAuthenticated] = useState(false);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChakraProvider>
+      <AuthContext.Provider value={authenticated}>
+        <AuthDispatch.Provider value={setAuthenticated}>
+          <Router>
+            <Switch>
+              <Route path="/auth" component={AuthLayout} />
+              <Route path="/" component={DashboardLayout} />
+              {/* <ProtectedRoute path="/" component={DashboardLayout} /> */}
+            </Switch>
+          </Router>
+        </AuthDispatch.Provider>
+      </AuthContext.Provider>
+    </ChakraProvider>
   );
 }
 

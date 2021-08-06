@@ -31,18 +31,36 @@ export default function Customers() {
     postCode: "",
     phoneNumber: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const initialRef = useRef();
 
-  const customersList = customers.map((customer, i) => (
-    <Tr key={i}>
-      <Td>{customer.name}</Td>
-      <Td>{customer.email}</Td>
-      <Td>{customer.phoneNumber}</Td>
-      <Td>{customer.address}</Td>
-      <Td>{customer.postCode}</Td>
-    </Tr>
-  ));
+  const customersList = customers
+    .filter(
+      (customer) =>
+        customer.name.toLowerCase().includes(searchQuery.toLocaleLowerCase()) ||
+        customer.email
+          .toLowerCase()
+          .includes(searchQuery.toLocaleLowerCase()) ||
+        customer.phoneNumber
+          .toLowerCase()
+          .includes(searchQuery.toLocaleLowerCase()) ||
+        customer.address
+          .toLowerCase()
+          .includes(searchQuery.toLocaleLowerCase()) ||
+        customer.postCode
+          .toLowerCase()
+          .includes(searchQuery.toLocaleLowerCase())
+    )
+    .map((customer, i) => (
+      <Tr key={i}>
+        <Td>{customer.name}</Td>
+        <Td>{customer.email}</Td>
+        <Td>{customer.phoneNumber}</Td>
+        <Td>{customer.address}</Td>
+        <Td>{customer.postCode}</Td>
+      </Tr>
+    ));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,7 +103,10 @@ export default function Customers() {
         Add Customer
       </Button>
       <InputGroup size="sm" mb={3}>
-        <Input placeholder="Search Products" />
+        <Input
+          placeholder="Search Products"
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
         <InputRightAddon children={<SearchIcon />} />
       </InputGroup>
       <Table variant="simple">

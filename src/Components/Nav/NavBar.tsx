@@ -78,13 +78,13 @@ const NavBar = () => {
             </Button>
           </Link>
 
-          <Link href="/dashboard/customers" >
+          <Link href="/customers" >
             <Button variant="ghost" aria-label="About" my={5} w="100%">
               Customers
             </Button>
           </Link>
 
-          <Link href="/dashboard/dispatch" >
+          <Link href="/dispatch" >
             <Button variant="ghost" aria-label="Contact" my={5} w="100%">
               Dispatch
             </Button>

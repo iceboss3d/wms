@@ -30,23 +30,32 @@ export default function Index() {
     location: "",
     quantity: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const initialRef = useRef();
 
-  const productsList = products.map((product, i) => (
-    <Tr key={i}>
-      <Td>{product.code}</Td>
-      <Td>{product.description}</Td>
-      <Td>{product.quantityInStock}</Td>
-      <Td>
-        {product.salesPrice.toLocaleString("en-UK", {
-          style: "currency",
-          currency: "GBP",
-        })}
-      </Td>
-      <Td>{product.location}</Td>
-    </Tr>
-  ));
+  const productsList = products
+    .filter(
+      (product) =>
+        product.code.toLowerCase().includes(searchQuery.toLocaleLowerCase()) ||
+        product.description
+          .toLowerCase()
+          .includes(searchQuery.toLocaleLowerCase())
+    )
+    .map((product, i) => (
+      <Tr key={i}>
+        <Td>{product.code}</Td>
+        <Td>{product.description}</Td>
+        <Td>{product.quantityInStock}</Td>
+        <Td>
+          {product.salesPrice.toLocaleString("en-UK", {
+            style: "currency",
+            currency: "GBP",
+          })}
+        </Td>
+        <Td>{product.location}</Td>
+      </Tr>
+    ));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -67,8 +76,8 @@ export default function Index() {
         title: response.message,
         position: "top-right",
       });
-        onClose();
-        getProducts();
+      onClose();
+      getProducts();
     });
   };
 
@@ -93,7 +102,7 @@ export default function Index() {
         Add Product
       </Button>
       <InputGroup size="sm" mb={3}>
-        <Input placeholder="Search Products" />
+        <Input placeholder="Search Products" onChange={(e) => setSearchQuery(e.target.value)} />
         <InputRightAddon children={<SearchIcon />} />
       </InputGroup>
       <Table variant="simple">

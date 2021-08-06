@@ -10,6 +10,9 @@ const authCall = (endpoint: string, data: any) => {
       })
       .then(
         (response) => {
+          if (!response.data.response.status) {
+            reject(response.data.response);
+          }
           resolve(response.data.response);
         },
         (err) => {
@@ -30,6 +33,9 @@ const getCall = (endpoint: string) => {
       })
       .then(
         (response) => {
+          if (!response.data.response.status) {
+            reject(response.data.response);
+          }
           resolve(response.data.response);
         },
         (err) => {
@@ -49,9 +55,35 @@ const postCall = (endpoint: string, data: any) => {
         },
       })
       .then(
-        (response) => resolve(response.data.response),
+        (response) => {
+          if (!response.data.response.status) {
+            reject(response.data.response);
+          }
+            resolve(response.data.response);
+        },
         (err: any) => reject(err)
       );
   });
 };
-export { authCall, getCall, postCall };
+
+const putCall = (endpoint: string, data: any) => {
+  return new Promise((resolve, reject) => {
+    axios
+      .put(`${baseUrl}/${endpoint}`, JSON.stringify(data), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(
+        (response) => {
+          if (!response.data.response.status) {
+            reject(response.data.response);
+          }
+            resolve(response.data.response);
+        },
+        (err: any) => reject(err)
+      );
+  });
+};
+export { authCall, getCall, postCall, putCall };

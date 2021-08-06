@@ -41,6 +41,7 @@ export default function Dispatch() {
       <Td>{new Date(invoice.date).toLocaleDateString("en-UK")}</Td>
       <Td>{invoice.invoiceNumber}</Td>
       <Td>{invoice.customer.name}</Td>
+      <Td>{invoice.dispatchStatus ? "Dispatched" : "Pending Dispatch"}</Td>
       <Td>
         <IconButton
           aria-label="Edit Invoice"
@@ -115,6 +116,7 @@ export default function Dispatch() {
             <Th>Date</Th>
             <Th>Invoice Number</Th>
             <Th>Customer</Th>
+            <Th>Status</Th>
             <Th>Actions</Th>
           </Tr>
         </Thead>

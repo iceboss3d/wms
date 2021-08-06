@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { authCall } from "../Helpers/api";
 import { AuthDispatch, AuthContext } from "../Context";
+import { loginUser, useAuthState, useAuthDispatch } from "../Context/index";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -22,18 +23,42 @@ export default function Login() {
     });
   };
 
+  const dispatch = useAuthDispatch();
+  const { loading, errorMessage } = useAuthState();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await authCall("login", formData).then((response: any) => {
-      window.localStorage.setItem("user", response.data.token);
-      toast({
-        status: "success",
-        title: response.message,
-        position: "top-right",
-      });
-      authDispatch(true);
-      history.push("/");
-    });
+    // try {
+    //   await loginUser(dispatch, formData);
+
+    //   history.push("/");
+    // } catch (error) {
+    //   console.log(error);
+
+    // }
+    await authCall("login", formData).then(
+      (response: any) => {
+        console.log(response);
+        if (!response.status) {
+          toast({
+            status: "error",
+            title: response.message,
+            position: "top-right",
+          });
+        } else {
+          window.localStorage.setItem("user", response.data.token);
+          authDispatch(true);
+          history.push("/");
+        }
+      },
+      (error) => {
+        toast({
+          status: "error",
+          title: error.message,
+          position: "top-right",
+        });
+      }
+    );
   };
   return (
     <div>

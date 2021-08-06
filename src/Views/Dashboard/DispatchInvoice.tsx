@@ -20,8 +20,9 @@ import {
 } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
 import ModalUI from "../../Components/Modal";
-import { getCall, postCall } from "../../Helpers/api";
+import { getCall, postCall, putCall } from "../../Helpers/api";
 
 export default function DispatchInvoice(props) {
   const id = props.match.params.id;
@@ -36,6 +37,7 @@ export default function DispatchInvoice(props) {
     productCode: "",
     invoiceNumber: id,
   });
+  const history = useHistory();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const initialRef = useRef();
@@ -59,7 +61,7 @@ export default function DispatchInvoice(props) {
   const invoiceItemsList = invoiceItems.map((invoice, i) => (
     <Tr>
       <Td>{i + 1}</Td>
-      <Td>{invoice.product.name}</Td>
+      <Td>{invoice.product.description}</Td>
       <Td>{invoice.noOfUnits}</Td>
       <Td>
         {(invoice.product.salesPrice * invoice.noOfUnits).toLocaleString(
@@ -97,7 +99,16 @@ export default function DispatchInvoice(props) {
     getCall(`invoice/${id}`).then(
       (response: any) => {
         setInvoice(response.data);
-        setInvoiceItems(response.data.invoiceItems);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    getCall(`invoice-item/${id}`).then(
+      (response: any) => {
+        console.log(response.data);
+
+        setInvoiceItems(response.data);
       },
       (err) => {
         console.log(err);
@@ -111,6 +122,21 @@ export default function DispatchInvoice(props) {
 
   const getProducts = () => {
     getCall("product").then((response: any) => setProducts(response.data));
+  };
+
+  const dispatchInvoice = () => {
+    putCall(`invoice/dispatch/${id}`, {}).then(
+      (response: any) => {
+        toast({
+          status: "success",
+          title: response.message,
+          position: "top-right",
+        });
+        history.push(`/dispatch/`)
+      },
+      (err) =>
+        toast({ status: "error", title: err.message, position: "top-right" })
+    );
   };
 
   useEffect(() => {
@@ -132,10 +158,15 @@ export default function DispatchInvoice(props) {
       <Flex justifyContent="space-between" flexWrap="wrap">
         <Heading>{invoice?.invoiceNumber}</Heading>
         <Stack spacing="1" direction="row">
-          <Button variant="outline" colorScheme="facebook">
+          {/* <Button variant="outline" colorScheme="facebook">
             Edit Invoice
-          </Button>
-          <Button variant="solid" colorScheme="green">
+          </Button> */}
+          <Button
+            variant="solid"
+            colorScheme="green"
+            onClick={() => dispatchInvoice()}
+            disabled={invoice?.dispatchStatus}
+          >
             Dispatch Invoice
           </Button>
         </Stack>
@@ -192,7 +223,26 @@ export default function DispatchInvoice(props) {
               <Th>Amount</Th>
             </Tr>
           </Thead>
-          <Tbody>{invoiceItemsList}</Tbody>
+          <Tbody>
+            {invoiceItemsList}
+            <Tr>
+              <Td></Td>
+              <Td>Total</Td>
+              <Td></Td>
+              <Td>
+                {invoiceItems
+                  .reduce(
+                    (total, item) =>
+                      total + item.product.salesPrice * item.noOfUnits,
+                    0
+                  )
+                  .toLocaleString("en-UK", {
+                    style: "currency",
+                    currency: "GBP",
+                  })}
+              </Td>
+            </Tr>
+          </Tbody>
         </Table>
         <Button
           variant="outline"
@@ -200,6 +250,7 @@ export default function DispatchInvoice(props) {
           type="button"
           mt={4}
           onClick={() => onOpen()}
+          disabled={invoice?.dispatchStatus}
         >
           Add Items
         </Button>
